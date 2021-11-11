@@ -2,7 +2,9 @@
 const express = require('express');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const session = require('express-session');
 
+const { sessionSecret } = require('./config');
 const bookRoutes = require('./routes/book');
 const userRoutes = require('./routes/user');
 
@@ -10,7 +12,13 @@ const app = express();
 
 app.set('view engine', 'pug');
 app.use(morgan('dev'));
-app.use(cookieParser());
+app.use(cookieParser(sessionSecret));
+app.use(session({
+  name: 'reading-list.sid',
+  secret: sessionSecret,
+  resave: false,
+  saveUninitialized: false,
+}));
 app.use(express.urlencoded({ extended: false }));
 app.use(bookRoutes);
 app.use(userRoutes);
